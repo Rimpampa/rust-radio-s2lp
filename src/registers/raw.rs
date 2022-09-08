@@ -30,17 +30,17 @@ macro_rules! derive {
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Gpio0Conf {
-    /// Specify the GPIO0 I/O signal, default setting POR
-    /// (see Table 61. GPIO digital output functions).
-    pub gpio_select: B5,
-    #[skip]
-    pub _reserved: B1,
     /// GPIO0 Mode:
     /// - `00b`: Analog (Hi-Z),
     /// - `01b`: Digital input,
     /// - `10b`: Digital output low power,
     /// - `11b`: Digital output high power
     pub gpio_mode: B2,
+    #[skip]
+    pub _reserved: B1,
+    /// Specify the GPIO0 I/O signal, default setting POR
+    /// (see Table 61. GPIO digital output functions).
+    pub gpio_select: B5,
 }
 
 derive!(Default for Gpio0Conf = bits: 0x0A);
@@ -51,17 +51,17 @@ derive!(radio::Register for Gpio0Conf = address: 0x00);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Gpio1Conf {
-    /// Specify the GPIO1 I/O signal, default setting digital GND
-    /// (see Table 61. GPIO digital output functions).
-    pub gpio_select: B5,
-    #[skip]
-    pub _reserved: B1,
     /// GPIO1 mode:
     /// - `00b`: Analog (Hi-Z),
     /// - `01b`: Digital input1,
     /// - `10b`: Digital output low power,
     /// - `11b`: Digital Output High Power
     pub gpio_mode: B2,
+    #[skip]
+    pub _reserved: B1,
+    /// Specify the GPIO1 I/O signal, default setting digital GND
+    /// (see Table 61. GPIO digital output functions).
+    pub gpio_select: B5,
 }
 
 derive!(Default for Gpio1Conf = bits: 0xA2);
@@ -72,17 +72,17 @@ derive!(radio::Register for Gpio1Conf = address: 0x01);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Gpio2Conf {
-    /// Specify the GPIO2 I/O signal, default setting digital GND
-    /// (see Table 61. GPIO digital output functions).
-    pub gpio_select: B5,
-    #[skip]
-    pub _reserved: B1,
     /// GPIO2 mode:
     /// - `00b`: Analog (Hi-Z),
     /// - `01b`: Digital input,
     /// - `10b`: Digital output low power,
     /// - `11b`: Digital output high power
     pub gpio_mode: B2,
+    #[skip]
+    pub _reserved: B1,
+    /// Specify the GPIO2 I/O signal, default setting digital GND
+    /// (see Table 61. GPIO digital output functions).
+    pub gpio_select: B5,
 }
 
 derive!(Default for Gpio2Conf = bits: 0xA2);
@@ -93,11 +93,6 @@ derive!(radio::Register for Gpio2Conf = address: 0x02);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Gpio3Conf {
-    /// Specify the GPIO3 I/O signal, default setting digital GND
-    /// (see Table 61. GPIO digital output functions).
-    pub gpio_select: B5,
-    #[skip]
-    pub _reserved: B1,
     /// GPIO3 mode:
     /// - `00b`: Analog (Hi-Z),
     /// - `00b`: Analog,
@@ -105,6 +100,11 @@ pub struct Gpio3Conf {
     /// - `10b`: Digital Output Low Power,
     /// - `11b`: Digital Output High Power
     pub gpio_mode: B2,
+    #[skip]
+    pub _reserved: B1,
+    /// Specify the GPIO3 I/O signal, default setting digital GND
+    /// (see Table 61. GPIO digital output functions).
+    pub gpio_select: B5,
 }
 
 derive!(Default for Gpio3Conf = bits: 0xA2);
@@ -115,9 +115,9 @@ derive!(radio::Register for Gpio3Conf = address: 0x03);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Synt3 {
-    /// Set the charge pump current according to the XTAL frequency
-    /// (see Table 37. Charge pump words).
-    pub pll_cp_isel: B3,
+    /// `[27:24]` MSB bits of the PLL programmable divider
+    /// (see Section 5.3.1 RF channel frequency settings).
+    pub synt: B4,
     /// Synthesizer band select.
     ///
     /// This parameter selects the out-of loop divide factor of the synthesizer:
@@ -126,9 +126,9 @@ pub struct Synt3 {
     ///
     /// (see Section 5.3.1 RF channel frequency settings).
     pub bs: B1,
-    /// `[27:24]` MSB bits of the PLL programmable divider
-    /// (see Section 5.3.1 RF channel frequency settings).
-    pub synt: B4,
+    /// Set the charge pump current according to the XTAL frequency
+    /// (see Table 37. Charge pump words).
+    pub pll_cp_isel: B3,
 }
 
 derive!(Default for Synt3 = bits: 0x42);
@@ -255,6 +255,8 @@ derive!(radio::Register for Mod3 = address: 0x0F);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Mod2 {
+    /// The exponent value of the data rate equation (see Eq. (14)).
+    pub datarate_e: B4,
     /// Modulation type:
     /// - `0`: 2-FSK,
     /// - `1`: 4-FSK,
@@ -265,8 +267,6 @@ pub struct Mod2 {
     /// - `10`: 2-GFSK BT=0.5,
     /// - `11`: 4-GFSK BT=0.5
     pub mod_type: B4,
-    /// The exponent value of the data rate equation (see Eq. (14)).
-    pub datarate_e: B4,
 }
 
 derive!(Default for Mod2 = bits: 0x77);
@@ -277,19 +277,19 @@ derive!(radio::Register for Mod2 = address: 0x10);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Mod1 {
-    /// - `1`: enable the PA power interpolator
-    ///
-    /// (see Section 5.6.1 PA configuration).
-    pub pa_interp_en: B1,
+    /// The exponent value of the frequency deviation equation (see Eq. (10)).
+    pub fdev_e: B4,
+    /// Select the constellation map for 4-(G)FSK or 2-(G)FSK modulations
+    /// (see Table 41. Constellation mapping 2-(G)FSK and Table 42. Constellation mapping 4-(G)FSK).
+    pub const_map: B2,
     /// - `1`: enable frequency interpolator for the GFSK shaping
     ///
     /// (see Section 5.4.1.1 Gaussian shaping).
     pub mod_interp_en: B1,
-    /// Select the constellation map for 4-(G)FSK or 2-(G)FSK modulations
-    /// (see Table 41. Constellation mapping 2-(G)FSK and Table 42. Constellation mapping 4-(G)FSK).
-    pub const_map: B2,
-    /// The exponent value of the frequency deviation equation (see Eq. (10)).
-    pub fdev_e: B4,
+    /// - `1`: enable the PA power interpolator
+    ///
+    /// (see Section 5.6.1 PA configuration).
+    pub pa_interp_en: B1,
 }
 
 derive!(Default for Mod1 = bits: 0x03);
@@ -312,12 +312,12 @@ derive!(radio::Register for Mod0 = address: 0x12);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Chflt {
-    /// The mantissa value of the receiver channel filter
-    /// (see Table 44. Channel filter words).
-    pub chflt_m: B4,
     /// The exponent value of the receiver channel filter
     /// (see Table 44. Channel filter words).
     pub chflt_e: B4,
+    /// The mantissa value of the receiver channel filter
+    /// (see Table 44. Channel filter words).
+    pub chflt_m: B4,
 }
 
 derive!(Default for Chflt = bits: 0x23);
@@ -328,16 +328,16 @@ derive!(radio::Register for Chflt = address: 0x13);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Afc2 {
-    /// - `1`: enable the freeze AFC correction upon sync word detection.
-    pub afc_freeze_on_sync: B1,
-    /// - `1`: enable the AFC correction.
-    pub afc_enabled: B1,
+    #[skip]
+    pub _reserved: B5,
     /// Select AFC mode:
     /// - `0`: AFC loop closed on slicer,
     /// - `1`: AFC loop closed on second conversion stage.
     pub afc_mode: B1,
-    #[skip]
-    pub _reserved: B5,
+    /// - `1`: enable the AFC correction.
+    pub afc_enabled: B1,
+    /// - `1`: enable the freeze AFC correction upon sync word detection.
+    pub afc_freeze_on_sync: B1,
 }
 
 derive!(Default for Afc2 = bits: 0xC8);
@@ -360,10 +360,10 @@ derive!(radio::Register for Afc1 = address: 0x15);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Afc0 {
-    /// The AFC loop gain in fast mode (2's log).
-    pub afc_fast_gain: B4,
     /// The AFC loop gain in slow mode (2's log).
     pub afc_slow_gain: B4,
+    /// The AFC loop gain in fast mode (2's log).
+    pub afc_fast_gain: B4,
 }
 
 derive!(Default for Afc0 = bits: 0x25);
@@ -374,8 +374,8 @@ derive!(radio::Register for Afc0 = address: 0x16);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct RssiFlt {
-    /// Gain of the RSSI filter.
-    pub rssi_flt: B4,
+    #[skip]
+    pub _reserved: B2,
     /// Carrier sense mode:
     /// - `00b`: Static CS,
     /// - `01b`: Dynamic CS with 6dB dynamic threshold,
@@ -384,8 +384,8 @@ pub struct RssiFlt {
     ///
     /// (see Section 5.5.8.2 Carrier sense)
     pub cs_mode: B2,
-    #[skip]
-    pub _reserved: B2,
+    /// Gain of the RSSI filter.
+    pub rssi_flt: B4,
 }
 
 derive!(Default for RssiFlt = bits: 0xE3);
@@ -409,10 +409,10 @@ derive!(radio::Register for RssiTh = address: 0x18);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Agcctrl4 {
-    /// Low threshold 0 for the AGC
-    pub low_threshold_0: B4,
     /// Low threshold 1 for the AGC
     pub low_threshold_1: B4,
+    /// Low threshold 0 for the AGC
+    pub low_threshold_0: B4,
 }
 
 derive!(Default for Agcctrl4 = bits: 0x54);
@@ -436,14 +436,14 @@ derive!(radio::Register for Agcctrl3 = address: 0x1B);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Agcctrl2 {
+    /// AGC measurement time
+    pub meas_time: B4,
     #[skip]
-    pub _reserved: B2,
+    pub _reserved: B1,
     /// Enable the AGC algorithm to be frozen on SYNC
     pub freeze_on_sync: B1,
     #[skip]
-    pub _reserved: B1,
-    /// AGC measurement time
-    pub meas_time: B4,
+    pub _reserved: B2,
 }
 
 derive!(Default for Agcctrl2 = bits: 0x22);
@@ -454,10 +454,10 @@ derive!(radio::Register for Agcctrl2 = address: 0x1C);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Agcctrl1 {
-    /// High threshold for the AGC
-    pub high_threshold: B4,
     #[skip]
     pub _reserved: B4,
+    /// High threshold for the AGC
+    pub high_threshold: B4,
 }
 
 derive!(Default for Agcctrl1 = bits: 0x59);
@@ -468,13 +468,13 @@ derive!(radio::Register for Agcctrl1 = address: 0x1D);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Agcctrl0 {
+    /// Hold time for after gain adjustment for the AGC.
+    pub hold_time: B6,
+    #[skip]
+    pub _reserved: B1,
     /// - `0`: disabled,
     /// - `1`: enabled
     pub agc_enable: B1,
-    #[skip]
-    pub _reserved: B1,
-    /// Hold time for after gain adjustment for the AGC.
-    pub hold_time: B6,
 }
 
 derive!(Default for Agcctrl0 = bits: 0x8C);
@@ -485,8 +485,13 @@ derive!(radio::Register for Agcctrl0 = address: 0x1E);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct AntSelectConf {
-    #[skip]
-    pub _reserved: B1,
+    /// Set the measurement time.
+    pub as_meas_time: B3,
+    /// Enable the antenna switching (see Section 5.5.10 Antenna switching).
+    pub as_enable: bool,
+    /// Do not fill the RX FIFO with data if the CS is threshold
+    /// (see Section 5.5.9 CS blanking).
+    pub cs_blanking: B1,
     /// ISI cancellation equalizer:
     /// - `00b`: equalization disabled,
     /// - `01b`: single pass equalization,
@@ -494,13 +499,8 @@ pub struct AntSelectConf {
     ///
     /// (see Section 5.4.1.2 ISI cancellation 4-(G)FSK)
     pub equ_ctrl: B2,
-    /// Do not fill the RX FIFO with data if the CS is threshold
-    /// (see Section 5.5.9 CS blanking).
-    pub cs_blanking: B1,
-    /// Enable the antenna switching (see Section 5.5.10 Antenna switching).
-    pub as_enable: bool,
-    /// Set the measurement time.
-    pub as_meas_time: B3,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for AntSelectConf = bits: 0x45);
@@ -511,15 +511,15 @@ derive!(radio::Register for AntSelectConf = address: 0x1F);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Clockrec2 {
-    /// Clock recovery slow loop gain (log2).
-    pub clk_rec_p_gain_slow: B3,
+    /// Set the integral slow gain for symbol timing recovery
+    /// (PLL mode only).
+    pub clk_rec_i_gain_slow: B4,
     /// Select the symbol timing recovery algorithm:
     /// - `0`: DLL,
     /// - `1`: PLL.
     pub clk_rec_algo_sel: B1,
-    /// Set the integral slow gain for symbol timing recovery
-    /// (PLL mode only).
-    pub clk_rec_i_gain_slow: B4,
+    /// Clock recovery slow loop gain (log2).
+    pub clk_rec_p_gain_slow: B3,
 }
 
 derive!(Default for Clockrec2 = bits: 0xC0);
@@ -530,15 +530,15 @@ derive!(radio::Register for Clockrec2 = address: 0x20);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Clockrec1 {
-    /// Clock recovery fast loop gain (log2).
-    pub clk_rec_p_gain_fast: B3,
+    /// Set the integral fast gain for symbol timing recovery
+    /// (PLL mode only).
+    pub clk_rec_i_gain_fast: B4,
     /// Select the post filter length:
     /// - `0`: 8 symbols,
     /// - `1`: 16 symbols.
     pub pstflt_len: B1,
-    /// Set the integral fast gain for symbol timing recovery
-    /// (PLL mode only).
-    pub clk_rec_i_gain_fast: B4,
+    /// Clock recovery fast loop gain (log2).
+    pub clk_rec_p_gain_fast: B3,
 }
 
 derive!(Default for Clockrec1 = bits: 0x58);
@@ -549,10 +549,10 @@ derive!(radio::Register for Clockrec1 = address: 0x21);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Pcktctrl6 {
-    /// The number of bits used for the SYNC field in the packet.
-    pub sync_len: B6,
     /// `[9:8]` The MSB of the number of '01 or '10' of the preamble of the packet.
     pub preamble_len: B2,
+    /// The number of bits used for the SYNC field in the packet.
+    pub sync_len: B6,
 }
 
 derive!(Default for Pcktctrl6 = bits: 0x80);
@@ -575,16 +575,16 @@ derive!(radio::Register for Pcktctrl5 = address: 0x2C);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Pcktctrl4 {
-    /// The number of bytes used for the length field:
-    /// - `0`: 1 byte,
-    /// - `1`: 2 bytes.
-    pub len_wid: B1,
     #[skip]
     pub _reserved: B3,
     /// Include the ADDRESS field in the packet.
     pub address_len: bool,
     #[skip]
     pub _reserved: B3,
+    /// The number of bytes used for the length field:
+    /// - `0`: 1 byte,
+    /// - `1`: 2 bytes.
+    pub len_wid: B1,
 }
 
 derive!(Default for Pcktctrl4 = bits: 0x00);
@@ -595,23 +595,23 @@ derive!(radio::Register for Pcktctrl4 = address: 0x2D);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Pcktctrl3 {
+    /// Select the preamble pattern.
+    pub preamble_sel: B2,
+    /// Select the transmission order between MSB and LSB.
+    pub byte_swap: B1,
+    /// Select the symbol mapping for 4(G)FSK.
+    pub fsk4_sym_swap: B1,
+    /// RX mode:
+    /// - `0`: normal mode,
+    /// - `1`: direct through FIFO,
+    /// - `2`: direct through GPIO
+    pub rx_mode: B2,
     /// Format of packet:
     /// - `0`: Basic,
     /// - `1`: 802.15.4g,
     /// - `2`: UART OTA,
     /// - `3`: Stack (see Section 7 Packet handler engine)
     pub pckt_frmt: B2,
-    /// RX mode:
-    /// - `0`: normal mode,
-    /// - `1`: direct through FIFO,
-    /// - `2`: direct through GPIO
-    pub rx_mode: B2,
-    /// Select the symbol mapping for 4(G)FSK.
-    pub fsk4_sym_swap: B1,
-    /// Select the transmission order between MSB and LSB.
-    pub byte_swap: B1,
-    /// Select the preamble pattern.
-    pub preamble_sel: B2,
 }
 
 derive!(Default for Pcktctrl3 = bits: 0x20);
@@ -622,10 +622,20 @@ derive!(radio::Register for Pcktctrl3 = address: 0x2E);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Pcktctrl2 {
-    #[skip]
-    pub _reserved: B2,
-    /// This is the FCS type in header field of 802.15.4g packet.
-    pub fcs_type_4g: B1,
+    /// Packet length mode:
+    /// - `0`: fixed,
+    /// - `1`: variable
+    ///
+    /// (in variable mode the field LEN_WID of PCKTCTRL3 register must be configured)
+    pub fix_var_len: B1,
+    /// Enable the Manchester encoding/decoding.
+    pub manchester_en: bool,
+    /// Enable the 3-out-of-6 encoding/decoding.
+    pub mbus_3of6_en: bool,
+    /// If the 802.15.4 mode is enabled, 1: enable the interleaving of 802.15.4g packet.
+    ///
+    /// If the UART packet is enabled, this is the value of the START_BIT.
+    pub int_en_4g_or_start_bit: B1,
     /// If the 802.15.4 mode is enabled, this is the FCS type in header field of 802.15.4g packet.
     ///
     /// Select the FEC type of 802.15.4g packet:
@@ -634,20 +644,10 @@ pub struct Pcktctrl2 {
     ///
     /// If the UART packet is enabled, this is the value of the STOP_BIT.
     pub fec_type_4g_or_stop_bit: B1,
-    /// If the 802.15.4 mode is enabled, 1: enable the interleaving of 802.15.4g packet.
-    ///
-    /// If the UART packet is enabled, this is the value of the START_BIT.
-    pub int_en_4g_or_start_bit: B1,
-    /// Enable the 3-out-of-6 encoding/decoding.
-    pub mbus_3of6_en: bool,
-    /// Enable the Manchester encoding/decoding.
-    pub manchester_en: bool,
-    /// Packet length mode:
-    /// - `0`: fixed,
-    /// - `1`: variable
-    ///
-    /// (in variable mode the field LEN_WID of PCKTCTRL3 register must be configured)
-    pub fix_var_len: B1,
+    /// This is the FCS type in header field of 802.15.4g packet.
+    pub fcs_type_4g: B1,
+    #[skip]
+    pub _reserved: B2,
 }
 
 derive!(Default for Pcktctrl2 = bits: 0x00);
@@ -658,6 +658,22 @@ derive!(radio::Register for Pcktctrl2 = address: 0x2F);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Pcktctrl1 {
+    /// Enable the FEC encoding in TX or the Viterbi decoding in RX.
+    pub fec_en: bool,
+    /// In TX mode:
+    /// - 0 select the primary SYNC word,
+    /// - 1 select the secondary SYNC word.
+    ///
+    /// In RX mode, if 1 enable the dual SYNC word detection mode.
+    pub second_sync_sel: B1,
+    /// Tx source data:
+    /// - `0`: normal mode,
+    /// - `1`: direct through FIFO,
+    /// - `2`: direct through GPIO,
+    /// - `3`: PN9
+    pub txsource: B2,
+    /// - `1`: enable the whitening mode.
+    pub whit_en: B1,
     /// CRC field:
     /// - `0`: no CRC field,
     /// - `1`: CRC using poly 0x07
@@ -666,22 +682,6 @@ pub struct Pcktctrl1 {
     /// - `4`: CRC using poly 0x864CBF,
     /// - `5`: CRC using poly
     pub crc_mode: B3,
-    /// - `1`: enable the whitening mode.
-    pub whit_en: B1,
-    /// Tx source data:
-    /// - `0`: normal mode,
-    /// - `1`: direct through FIFO,
-    /// - `2`: direct through GPIO,
-    /// - `3`: PN9
-    pub txsource: B2,
-    /// In TX mode:
-    /// - 0 select the primary SYNC word,
-    /// - 1 select the secondary SYNC word.
-    ///
-    /// In RX mode, if 1 enable the dual SYNC word detection mode.
-    pub second_sync_sel: B1,
-    /// Enable the FEC encoding in TX or the Viterbi decoding in RX.
-    pub fec_en: bool,
 }
 
 derive!(Default for Pcktctrl1 = bits: 0x2C);
@@ -764,12 +764,12 @@ derive!(radio::Register for Sync0 = address: 0x36);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Qi {
-    /// SQI threshold.
-    pub sqi_th: B3,
-    /// PQI threshold.
-    pub pqi_th: B4,
     /// Enable the SQI check.
     pub sqi_en: bool,
+    /// PQI threshold.
+    pub pqi_th: B4,
+    /// SQI threshold.
+    pub sqi_th: B3,
 }
 
 derive!(Default for Qi = bits: 0x01);
@@ -792,23 +792,23 @@ derive!(radio::Register for PcktPstmbl = address: 0x38);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Protocol2 {
-    /// Enable the CS value contributes to timeout disabling.
-    pub cs_timeout_mask: bool,
-    /// Enable the SQI value contributes to timeout disabling.
-    pub sqi_timeout_mask: bool,
-    /// Enable the PQI value contributes to timeout disabling.
-    pub pqi_timeout_mask: bool,
-    /// TX sequence number to be used when counting reset is required using the related command.
-    pub tx_seq_num_reload: B2,
-    /// - `0`: select the almost empty/full control for TX FIFO.
-    /// - `1`: select the almost empty/full control for RX FIFO.
-    pub fifo_gpio_out_mux_sel: B1,
     /// Set the LDC timer multiplier factor:
     /// - `00b`: x1,
     /// - `01b`: x2,
     /// - `10b`: x4,
     /// - `11b`: x8.
     pub ldc_timer_mult: B2,
+    /// - `0`: select the almost empty/full control for TX FIFO.
+    /// - `1`: select the almost empty/full control for RX FIFO.
+    pub fifo_gpio_out_mux_sel: B1,
+    /// TX sequence number to be used when counting reset is required using the related command.
+    pub tx_seq_num_reload: B2,
+    /// Enable the PQI value contributes to timeout disabling.
+    pub pqi_timeout_mask: bool,
+    /// Enable the SQI value contributes to timeout disabling.
+    pub sqi_timeout_mask: bool,
+    /// Enable the CS value contributes to timeout disabling.
+    pub cs_timeout_mask: bool,
 }
 
 derive!(Default for Protocol2 = bits: 0x40);
@@ -819,22 +819,22 @@ derive!(radio::Register for Protocol2 = address: 0x39);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Protocol1 {
-    /// Enable the Low Duty Cycle mode.
-    pub ldc_mode: bool,
-    /// Enable the LDC timer reload mode.
-    pub ldc_reload_on_sync: bool,
-    /// Enable the piggybacking.
-    pub piggybacking: bool,
-    /// Enable the RX sniff timer.
-    pub fast_cs_term_en: bool,
-    /// Enable the reload of the back-off random generator seed using the value written in the BU_COUNTER_SEED.
-    pub seed_reload: bool,
-    /// Enable the CSMA channel access mode.
-    pub csma_on: bool,
-    /// Enable the CSMA persistent mode (no back-off cycles).
-    pub csma_pers_on: bool,
     /// Enable the automatic packet filtering control.
     pub auto_pckt_flt: bool,
+    /// Enable the CSMA persistent mode (no back-off cycles).
+    pub csma_pers_on: bool,
+    /// Enable the CSMA channel access mode.
+    pub csma_on: bool,
+    /// Enable the reload of the back-off random generator seed using the value written in the BU_COUNTER_SEED.
+    pub seed_reload: bool,
+    /// Enable the RX sniff timer.
+    pub fast_cs_term_en: bool,
+    /// Enable the piggybacking.
+    pub piggybacking: bool,
+    /// Enable the LDC timer reload mode.
+    pub ldc_reload_on_sync: bool,
+    /// Enable the Low Duty Cycle mode.
+    pub ldc_mode: bool,
 }
 
 derive!(Default for Protocol1 = bits: 0x00);
@@ -845,16 +845,16 @@ derive!(radio::Register for Protocol1 = address: 0x3A);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct Protocol0 {
-    /// Max. number of re-TX (from 0 to 15)(0: re-transmission is not performed).
-    pub nmax_retx: B4,
-    /// Field NO_ACK=1 on transmitted packet.
-    pub nack_tx: bool,
-    /// Enable the automatic acknowledgment if packet received request.
-    pub auto_ack: bool,
-    /// Enable the persistent RX mode.
-    pub pers_rx: bool,
     #[skip]
     pub _reserved: B1,
+    /// Enable the persistent RX mode.
+    pub pers_rx: bool,
+    /// Enable the automatic acknowledgment if packet received request.
+    pub auto_ack: bool,
+    /// Field NO_ACK=1 on transmitted packet.
+    pub nack_tx: bool,
+    /// Max. number of re-TX (from 0 to 15)(0: re-transmission is not performed).
+    pub nmax_retx: B4,
 }
 
 derive!(Default for Protocol0 = bits: 0x08);
@@ -865,10 +865,10 @@ derive!(radio::Register for Protocol0 = address: 0x3B);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct FifoConfig3 {
-    #[skip]
-    pub _reserved: B1,
     /// Set the RX FIFO almost full threshold.
     pub rx_afthr: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for FifoConfig3 = bits: 0x30);
@@ -879,10 +879,10 @@ derive!(radio::Register for FifoConfig3 = address: 0x3C);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct FifoConfig2 {
-    #[skip]
-    pub _reserved: B1,
     /// Set the RX FIFO almost empty threshold.
     pub rx_aethr: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for FifoConfig2 = bits: 0x30);
@@ -893,10 +893,10 @@ derive!(radio::Register for FifoConfig2 = address: 0x3D);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct FifoConfig1 {
-    #[skip]
-    pub _reserved: B1,
     /// Set the TX FIFO almost full threshold.
     pub tx_afthr: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for FifoConfig1 = bits: 0x30);
@@ -907,10 +907,10 @@ derive!(radio::Register for FifoConfig1 = address: 0x3E);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct FifoConfig0 {
-    #[skip]
-    pub _reserved: B1,
     /// Set the TX FIFO almost empty threshold.
     pub tx_aethr: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for FifoConfig0 = bits: 0x30);
@@ -921,6 +921,16 @@ derive!(radio::Register for FifoConfig0 = address: 0x3F);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PcktFltOptions {
+    /// Packet discarded if CRC is not valid.
+    pub crc_flt: bool,
+    /// RX packet accepted if its destination address matches with `RX_SOURCE_ADDR` register.
+    pub dest_vs_source_addr: bool,
+    /// RX packet accepted if its destination address matches with `MULTICAST_ADDR` register.
+    pub dest_vs_multicast_addr: bool,
+    /// RX packet accepted if its source field matches with `BROADCAST_ADDR` register.
+    pub dest_vs_broadcast_addr: bool,
+    /// RX packet accepted if its source field matches with `RX_SOURCE_ADDR` register
+    pub source_addr_flt: bool,
     #[skip]
     pub _reserved: B1,
     /// Logical Boolean function applied to CS/SQI/PQI values:
@@ -929,16 +939,6 @@ pub struct PcktFltOptions {
     pub rx_timeout_and_or_sel: B1,
     #[skip]
     pub _reserved: B1,
-    /// RX packet accepted if its source field matches with `RX_SOURCE_ADDR` register
-    pub source_addr_flt: bool,
-    /// RX packet accepted if its source field matches with `BROADCAST_ADDR` register.
-    pub dest_vs_broadcast_addr: bool,
-    /// RX packet accepted if its destination address matches with `MULTICAST_ADDR` register.
-    pub dest_vs_multicast_addr: bool,
-    /// RX packet accepted if its destination address matches with `RX_SOURCE_ADDR` register.
-    pub dest_vs_source_addr: bool,
-    /// Packet discarded if CRC is not valid.
-    pub crc_flt: bool,
 }
 
 derive!(Default for PcktFltOptions = bits: 0x40);
@@ -1111,10 +1111,10 @@ derive!(radio::Register for CsmaConf2 = address: 0x4D);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct CsmaConf1 {
-    /// Prescaler value for the back-off unit BU.
-    pub bu_prsc: B6,
     /// Multiplier for the Tcca timer.
     pub cca_period: B2,
+    /// Prescaler value for the back-off unit BU.
+    pub bu_prsc: B6,
 }
 
 derive!(Default for CsmaConf1 = bits: 0x04);
@@ -1125,12 +1125,12 @@ derive!(radio::Register for CsmaConf1 = address: 0x4E);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct CsmaConf0 {
-    /// The number of time in which the listen operation is performed.
-    pub cca_len: B4,
-    #[skip]
-    pub _reserved: B1,
     /// Max number of back-off cycles.
     pub nbackoff_max: B3,
+    #[skip]
+    pub _reserved: B1,
+    /// The number of time in which the listen operation is performed.
+    pub cca_len: B4,
 }
 
 derive!(Default for CsmaConf0 = bits: 0x00);
@@ -1201,10 +1201,10 @@ derive!(radio::Register for FastRxTimer = address: 0x54);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower8 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 8th slot.
     pub pa_level8: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower8 = bits: 0x01);
@@ -1215,10 +1215,10 @@ derive!(radio::Register for PaPower8 = address: 0x5A);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower7 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 7th slot.
     pub pa_level_7: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower7 = bits: 0x0C);
@@ -1229,10 +1229,10 @@ derive!(radio::Register for PaPower7 = address: 0x5B);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower6 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 6th slot.
     pub pa_level_6: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower6 = bits: 0x18);
@@ -1243,10 +1243,10 @@ derive!(radio::Register for PaPower6 = address: 0x5C);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower5 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 5th slot.
     pub pa_level_5: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower5 = bits: 0x24);
@@ -1257,10 +1257,10 @@ derive!(radio::Register for PaPower5 = address: 0x5D);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower4 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 4th slot.
     pub pa_level_4: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower4 = bits: 0x30);
@@ -1271,10 +1271,10 @@ derive!(radio::Register for PaPower4 = address: 0x5E);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower3 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 3rd slot.
     pub pa_level_3: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower3 = bits: 0x48);
@@ -1285,10 +1285,10 @@ derive!(radio::Register for PaPower3 = address: 0x5F);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower2 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 2nd slot.
     pub pa_level_2: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower2 = bits: 0x60);
@@ -1299,10 +1299,10 @@ derive!(radio::Register for PaPower2 = address: 0x60);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower1 {
-    #[skip]
-    pub _reserved: B1,
     /// Output power level for 1st slot.
     pub pa_level_1: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for PaPower1 = bits: 0x00);
@@ -1313,20 +1313,20 @@ derive!(radio::Register for PaPower1 = address: 0x61);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaPower0 {
-    /// Enable the generation of the internal signal TX_DATA which is the input of the FIR.
-    ///
-    /// Needed when `FIR_EN = 1`.
-    pub dig_smooth_en: bool,
+    /// Final level for power ramping or selected output power index.
+    pub pa_level_max_idx: B3,
+    /// Set the step width (unit: 1/8 of bit period).
+    pub pa_ramp_step_len: B2,
+    /// Enable the power ramping.
+    pub pa_ramp_en: bool,
     /// Configure the PA to send maximum output power.
     ///
     /// Power ramping is disable with this bit set to 1.
     pub pa_maxdbm: bool,
-    /// Enable the power ramping.
-    pub pa_ramp_en: bool,
-    /// Set the step width (unit: 1/8 of bit period).
-    pub pa_ramp_step_len: B2,
-    /// Final level for power ramping or selected output power index.
-    pub pa_level_max_idx: B3,
+    /// Enable the generation of the internal signal TX_DATA which is the input of the FIR.
+    ///
+    /// Needed when `FIR_EN = 1`.
+    pub dig_smooth_en: bool,
 }
 
 derive!(Default for PaPower0 = bits: 0x47);
@@ -1338,7 +1338,9 @@ derive!(radio::Register for PaPower0 = address: 0x62);
 #[repr(u8)]
 pub struct PaConfig1 {
     #[skip]
-    pub _reserved: B4,
+    pub _reserved: B1,
+    /// Enable FIR (see Section 5.4.2.1 OOK smoothing)
+    pub fir_en: bool,
     /// FIR configuration:
     /// - `00b`: filtering
     /// - `01b`: ramping
@@ -1346,10 +1348,8 @@ pub struct PaConfig1 {
     ///
     /// (see Section 5.4.2.1 OOK smoothing)
     pub fir_cfg: B2,
-    /// Enable FIR (see Section 5.4.2.1 OOK smoothing)
-    pub fir_en: bool,
     #[skip]
-    pub _reserved: B1,
+    pub _reserved: B4,
 }
 
 derive!(Default for PaConfig1 = bits: 0x03);
@@ -1360,6 +1360,18 @@ derive!(radio::Register for PaConfig1 = address: 0x63);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PaConfig0 {
+    /// PA bessel filter bandwidth:
+    /// - `00b`: 12.5 kHz (data rate 16.2 kbps),
+    /// - `01b`: 25 kHz (data rate 32 kbps),
+    /// - `10b`: 50 kHz (data rate 62.5 kbps),
+    /// - `11b`: 100 kHz (data rate 125 kbps)
+    ///
+    /// (see Section 5.4.2.1 OOK smoothing).
+    pub pa_fc: B2,
+    /// During a TX operation, enables and starts the digital ASK calibrator.
+    pub safe_ask_cal: bool,
+    /// Enables the 'degeneration' mode that introduces a pre-distortion to linearize the power control curve.
+    pub pa_degen_on: bool,
     /// - 11xx ® code threshold: 485,
     /// - 10xx ® code threshold: 465,
     /// - 01xx ® code threshold: 439,
@@ -1369,18 +1381,6 @@ pub struct PaConfig0 {
     /// - xx01 ® clamp voltage: 0.45 V,
     /// - xx00 ® clamp voltage: 0.40 V.
     pub pa_degen_trim: B4,
-    /// Enables the 'degeneration' mode that introduces a pre-distortion to linearize the power control curve.
-    pub pa_degen_on: bool,
-    /// During a TX operation, enables and starts the digital ASK calibrator.
-    pub safe_ask_cal: bool,
-    /// PA bessel filter bandwidth:
-    /// - `00b`: 12.5 kHz (data rate 16.2 kbps),
-    /// - `01b`: 25 kHz (data rate 32 kbps),
-    /// - `10b`: 50 kHz (data rate 62.5 kbps),
-    /// - `11b`: 100 kHz (data rate 125 kbps)
-    ///
-    /// (see Section 5.4.2.1 OOK smoothing).
-    pub pa_fc: B2,
 }
 
 derive!(Default for PaConfig0 = bits: 0x8A);
@@ -1392,12 +1392,12 @@ derive!(radio::Register for PaConfig0 = address: 0x64);
 #[repr(u8)]
 pub struct SynthConfig2 {
     #[skip]
-    pub _reserved: B5,
+    pub _reserved: B2,
     /// Enables increased DN current pulses to improve linearization of CP/PFD
     /// (see Table 37. Charge pump words).
     pub pll_pfd_split_en: bool,
     #[skip]
-    pub _reserved: B2,
+    pub _reserved: B5,
 }
 
 derive!(Default for SynthConfig2 = bits: 0xD0);
@@ -1409,17 +1409,17 @@ derive!(radio::Register for SynthConfig2 = address: 0x65);
 #[repr(u8)]
 pub struct VcoConfig {
     #[skip]
-    pub _reserved: B2,
-    /// VCO amplitude calibration is skipped
-    ///
-    /// (external amplitude word forced on VCO).
-    pub vco_calamp_ext_sel: bool,
+    pub _reserved: B4,
     /// VCO frequency calibration is skipped
     ///
     /// (external amplitude word forced on VCO).
     pub vco_calfreq_ext_sel: bool,
+    /// VCO amplitude calibration is skipped
+    ///
+    /// (external amplitude word forced on VCO).
+    pub vco_calamp_ext_sel: bool,
     #[skip]
-    pub _reserved: B4,
+    pub _reserved: B2,
 }
 
 derive!(Default for VcoConfig = bits: 0x03);
@@ -1467,11 +1467,11 @@ derive!(radio::Register for VcoCalibrIn0 = address: 0x6B);
 #[repr(u8)]
 pub struct XoRcoConf1 {
     #[skip]
-    pub _reserved: B3,
+    pub _reserved: B4,
     /// - `1`: disable both dividers of digital clock (and reference clock for the SMPS) and IF-ADC clock.
     pub pd_clkdiv: B1,
     #[skip]
-    pub _reserved: B4,
+    pub _reserved: B3,
 }
 
 derive!(Default for XoRcoConf1 = bits: 0x45);
@@ -1482,19 +1482,19 @@ derive!(radio::Register for XoRcoConf1 = address: 0x6C);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct XoRcoConf0 {
+    /// Enable the automatic RCO calibration.
+    pub rco_calibration: bool,
+    /// - `1`: the 34.7 kHz signal must be supplied from any GPIO.
+    pub ext_rco_osc: B1,
+    #[skip]
+    pub _reserved: B1,
+    /// Enable the the reference clock divider.
+    pub refdiv: bool,
+    /// Set the driver gm of the XO at start up.
+    pub gm_conf: B3,
     /// - `0`: reference signal from XO circuit
     /// - `1`: reference signal from XIN pin.
     pub ext_ref: B1,
-    /// Set the driver gm of the XO at start up.
-    pub gm_conf: B3,
-    /// Enable the the reference clock divider.
-    pub refdiv: bool,
-    #[skip]
-    pub _reserved: B1,
-    /// - `1`: the 34.7 kHz signal must be supplied from any GPIO.
-    pub ext_rco_osc: B1,
-    /// Enable the automatic RCO calibration.
-    pub rco_calibration: bool,
 }
 
 derive!(Default for XoRcoConf0 = bits: 0x30);
@@ -1505,10 +1505,10 @@ derive!(radio::Register for XoRcoConf0 = address: 0x6D);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct RcoCalibrConf3 {
-    /// RWT word value for the RCO.
-    pub rwt_in: B4,
     /// `[4:1]` MSB part of RFB word value for RCO.
     pub rfb_in: B4,
+    /// RWT word value for the RCO.
+    pub rwt_in: B4,
 }
 
 derive!(Default for RcoCalibrConf3 = bits: 0x70);
@@ -1519,10 +1519,10 @@ derive!(radio::Register for RcoCalibrConf3 = address: 0x6E);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct RcoCalibrConf2 {
-    /// `[0]` LSB part of RFB word value for RCO.
-    pub rfb_in: B1,
     #[skip]
     pub _reserved: B7,
+    /// `[0]` LSB part of RFB word value for RCO.
+    pub rfb_in: B1,
 }
 
 derive!(Default for RcoCalibrConf2 = bits: 0x4D);
@@ -1534,11 +1534,11 @@ derive!(radio::Register for RcoCalibrConf2 = address: 0x6F);
 #[repr(u8)]
 pub struct PmConf4 {
     #[skip]
-    pub _reserved: B2,
+    pub _reserved: B5,
     /// - `1`: disable the internal SMPS.
     pub ext_smps: B1,
     #[skip]
-    pub _reserved: B5,
+    pub _reserved: B2,
 }
 
 derive!(Default for PmConf4 = bits: 0x17);
@@ -1549,12 +1549,12 @@ derive!(radio::Register for PmConf4 = address: 0x75);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PmConf3 {
-    /// - `0`: divider by 4 enabled (SMPS' switching frequency is `FSW = Fdig / 4`)
-    /// - `1`: rate multiplier enabled (SMPS' switching frequency is `FSW = KRM * Fdig / (2^15)`).
-    pub krm_en: B1,
     /// `[14:8]` Sets the divider ratio (MSB) of the rate multiplier
     /// (default: `Fsw = Fdig / 4`)
     pub krm: B7,
+    /// - `0`: divider by 4 enabled (SMPS' switching frequency is `FSW = Fdig / 4`)
+    /// - `1`: rate multiplier enabled (SMPS' switching frequency is `FSW = KRM * Fdig / (2^15)`).
+    pub krm_en: B1,
 }
 
 derive!(Default for PmConf3 = bits: 0x20);
@@ -1579,22 +1579,22 @@ derive!(radio::Register for PmConf2 = address: 0x77);
 #[repr(u8)]
 pub struct PmConf1 {
     #[skip]
-    pub _reserved: B1,
-    /// Enable battery level detector circuit.
-    pub battery_lvl_en: bool,
+    pub _reserved: B2,
+    /// Set to 0 (default value)
+    pub bypass_ldo: B1,
+    /// - `0`: SMPS output level depends upon the value written in the `PM_CONFIG0` register (`SET_SMPS_LEVEL` field) both in RX and TX state.
+    /// - `1`: SMPS output level depends upon the value in `PM_CONFIG` register just in TX state, while in RX state it is fixed to 1.4 V
+    pub smps_lvl_mode: B1,
     /// Set the BLD threshold:
     /// - `00b`: 2.7 V,
     /// - `01b`: 2.5 V,
     /// - `10b`: 2.3 V,
     /// - `11b`: 2.1 V.
     pub set_bld_th: B2,
-    /// - `0`: SMPS output level depends upon the value written in the `PM_CONFIG0` register (`SET_SMPS_LEVEL` field) both in RX and TX state.
-    /// - `1`: SMPS output level depends upon the value in `PM_CONFIG` register just in TX state, while in RX state it is fixed to 1.4 V
-    pub smps_lvl_mode: B1,
-    /// Set to 0 (default value)
-    pub bypass_ldo: B1,
+    /// Enable battery level detector circuit.
+    pub battery_lvl_en: bool,
     #[skip]
-    pub _reserved: B2,
+    pub _reserved: B1,
 }
 
 derive!(Default for PmConf1 = bits: 0x39);
@@ -1605,8 +1605,11 @@ derive!(radio::Register for PmConf1 = address: 0x78);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct PmConf0 {
+    /// - `0`: SLEEP without FIFO retention (SLEEP A),
+    /// - `1`: SLEEP with FIFO retention (SLEEP B).
+    pub sleep_mode_sel: B1,
     #[skip]
-    pub _reserved: B1,
+    pub _reserved: B3,
     /// SMPS output voltage:
     /// - `000b`: not used,
     /// - `001b`: 1.2 V,
@@ -1618,10 +1621,7 @@ pub struct PmConf0 {
     /// - `111b`: 1.8 V
     pub set_smps_lvl: B3,
     #[skip]
-    pub _reserved: B3,
-    /// - `0`: SLEEP without FIFO retention (SLEEP A),
-    /// - `1`: SLEEP with FIFO retention (SLEEP B).
-    pub sleep_mode_sel: B1,
+    pub _reserved: B1,
 }
 
 derive!(Default for PmConf0 = bits: 0x42);
@@ -1632,18 +1632,18 @@ derive!(radio::Register for PmConf0 = address: 0x79);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct McState1 {
-    #[skip]
-    pub _reserved: B3,
-    /// RCO calibration successfully terminated.
-    pub rco_cal_ok: B1,
-    /// Currently selected antenna.
-    pub ant_sel: B1,
-    /// - `1`: TX FIFO is full.
-    pub tx_fifo_full: B1,
-    /// - `1`: RX FIFO is empty.
-    pub rx_fifo_empty: B1,
     /// - `1`: RCO calibrator error.
     pub error_lock: B1,
+    /// - `1`: RX FIFO is empty.
+    pub rx_fifo_empty: B1,
+    /// - `1`: TX FIFO is full.
+    pub tx_fifo_full: B1,
+    /// Currently selected antenna.
+    pub ant_sel: B1,
+    /// RCO calibration successfully terminated.
+    pub rco_cal_ok: B1,
+    #[skip]
+    pub _reserved: B3,
 }
 
 derive!(Default for McState1 = bits: 0x52);
@@ -1654,10 +1654,10 @@ derive!(radio::Register for McState1 = address: 0x8D);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct McState0 {
-    /// Current state.
-    pub state: B7,
     /// - `1`: XO is operating.
     pub xo_on: B1,
+    /// Current state.
+    pub state: B7,
 }
 
 derive!(Default for McState0 = bits: 0x07);
@@ -1692,10 +1692,10 @@ derive!(radio::Register for RxFifoStatus = address: 0x90);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct RcoCalibrOut4 {
-    /// RWT word from internal RCO calibrator.
-    pub rwt_out: B4,
     /// `[4:1]` RFB word (MSB) from internal RCO calibrator.
     pub rfb_out: B4,
+    /// RWT word from internal RCO calibrator.
+    pub rwt_out: B4,
 }
 
 derive!(Default for RcoCalibrOut4 = bits: 0x70);
@@ -1706,10 +1706,10 @@ derive!(radio::Register for RcoCalibrOut4 = address: 0x94);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct RcoCalibrOut3 {
-    /// `[0]` RF word (LSB) from internal RCO calibrator.
-    pub rfb_out: B1,
     #[skip]
     pub _reserved: B7,
+    /// `[0]` RF word (LSB) from internal RCO calibrator.
+    pub rfb_out: B1,
 }
 
 derive!(Default for RcoCalibrOut3 = bits: 0x00);
@@ -1720,11 +1720,11 @@ derive!(radio::Register for RcoCalibrOut3 = address: 0x95);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct VcoCalibrOut1 {
-    #[skip]
-    pub _reserved: B4,
     /// VCO magnitude calibration output word
     /// (binary coding internally converted from thermometric coding).
     pub vco_cal_amp_out: B4,
+    #[skip]
+    pub _reserved: B4,
 }
 
 derive!(Default for VcoCalibrOut1 = bits: 0x00);
@@ -1735,11 +1735,11 @@ derive!(radio::Register for VcoCalibrOut1 = address: 0x99);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct VcoCalibrout0 {
-    #[skip]
-    pub _reserved: B1,
     /// VCO Cbank frequency calibration output word
     /// (binary coding internally converted from thermometric coding).
     pub vco_cal_freq_out: B7,
+    #[skip]
+    pub _reserved: B1,
 }
 
 derive!(Default for VcoCalibrout0 = bits: 0x00);
@@ -1750,12 +1750,12 @@ derive!(radio::Register for VcoCalibrout0 = address: 0x9A);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct TxPcktInfo {
-    #[skip]
-    pub _reserved: B2,
-    /// Current TX packet sequence number.
-    pub tx_seq_num: B2,
     /// Number of re-transmissions done for the last TX packet.
     pub n_retx: B4,
+    /// Current TX packet sequence number.
+    pub tx_seq_num: B2,
+    #[skip]
+    pub _reserved: B2,
 }
 
 derive!(Default for TxPcktInfo = bits: 0x00);
@@ -1766,12 +1766,12 @@ derive!(radio::Register for TxPcktInfo = address: 0x9C);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct RxPcktInfo {
-    #[skip]
-    pub _reserved: B5,
-    /// NACK field of the received packet.
-    pub nack_rx: B1,
     /// Sequence number of the received packet.
     pub rx_seq_num: B2,
+    /// NACK field of the received packet.
+    pub nack_rx: B1,
+    #[skip]
+    pub _reserved: B5,
 }
 
 derive!(Default for RxPcktInfo = bits: 0x00);
@@ -1806,10 +1806,10 @@ derive!(radio::Register for LinkQualif2 = address: 0x9F);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub struct LinkQualif1 {
-    /// Carrier sense indication.
-    pub cs: B1,
     /// SQI value of the received packet.
     pub sqi: B7,
+    /// Carrier sense indication.
+    pub cs: B1,
 }
 
 derive!(Default for LinkQualif1 = bits: 0x00);
