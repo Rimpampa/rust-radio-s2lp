@@ -16,6 +16,8 @@ pub use base::{Base, Io};
 pub mod device;
 use device::*;
 
+pub mod registers;
+
 
 /// S2lp SPI operating mode
 pub const SPI_MODE: Mode = Mode {
